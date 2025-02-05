@@ -7,25 +7,25 @@
         <legend>Contact Values</legend>
         <p>
             <label for="email">Email</label>
-            <input name="email" id="email" type="email" placeholder="Email" value="{{ .Email }}">
+            <input name="email" id="email" type="email" placeholder="Email" value="{{ .Contact.Email }}">
             <span class="error">
-                {{ .Errors.email }}
+                {{ .Contact.Errors.email }}
             </span>
         </p>
         <p>
             <label for="first_name">First Name</label>
-            <input name="first_name" id="first_name" type="text" placeholder="First Name" value="{{ .First }}">
-            <span class="error">{{ .Errors.first }}</span>
+            <input name="first_name" id="first_name" type="text" placeholder="First Name" value="{{ .Contact.First }}">
+            <span class="error">{{ .Contact.Errors.first }}</span>
         </p>
         <p>
             <label for="last_name">Last Name</label>
-            <input name="last_name" id="last_name" type="text" placeholder="Last Name" value="{{ .Last }}">
-            <span class="error">{{ .Errors.last }}</span>
+            <input name="last_name" id="last_name" type="text" placeholder="Last Name" value="{{ .Contact.Last }}">
+            <span class="error">{{ .Contact.Errors.last }}</span>
         </p>
         <p>
             <label for="phone">Phone</label>
-            <input name="phone" id="phone" type="text" placeholder="Phone" value="{{ .Phone }}">
-            <span class="error">{{ .Errors.phone }}</span>
+            <input name="phone" id="phone" type="text" placeholder="Phone" value="{{ .Contact.Phone }}">
+            <span class="error">{{ .Contact.Errors.phone }}</span>
         </p>
         <button>Save</button>
     </fieldset>

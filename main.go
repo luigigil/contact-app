@@ -159,7 +159,7 @@ func main() {
 			"Contact": c,
 		})
 	})
-	r.Post("/contacts/{contactID}/delete", func(w http.ResponseWriter, r *http.Request) {
+	r.Delete("/contacts/{contactID}", func(w http.ResponseWriter, r *http.Request) {
 		contactID := chi.URLParam(r, "contactID")
 		if contactID == "" {
 			http.NotFound(w, r)

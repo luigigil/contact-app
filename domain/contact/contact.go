@@ -7,6 +7,7 @@ import (
 	"os"
 	"slices"
 	"strings"
+	"time"
 )
 
 type Contact struct {
@@ -179,4 +180,9 @@ func Validate(contact Contact) Contact {
 	}
 
 	return contact
+}
+
+func Count() int {
+	time.Sleep(2 * time.Second)
+	return len(contacts)
 }

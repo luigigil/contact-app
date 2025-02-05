@@ -36,6 +36,9 @@
 
 <p>
     <a href="/contacts/new">Add Contact</a>
+    <span hx-get="/contacts/count" hx-trigger="revealed">
+        <img id="spinner" class="htmx-indicator" src="/static/img/spinner-circles.svg" alt="Request in flight...">
+    </span>
 </p>
 
 {{end}}

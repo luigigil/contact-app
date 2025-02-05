@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/luigigil/contact-app/domain/contact"
@@ -50,7 +49,6 @@ func main() {
 		http.Redirect(w, r, "/contacts", http.StatusSeeOther)
 	})
 	r.Get("/contacts", func(w http.ResponseWriter, r *http.Request) {
-		time.Sleep(2 * time.Second)
 		page := 1
 		if r.URL.Query().Has("page") {
 			p, err := strconv.Atoi(r.URL.Query().Get("page"))
@@ -234,6 +232,10 @@ func main() {
 
 		fmt.Println(c.Errors["email"])
 		w.Write([]byte(c.Errors["email"]))
+	})
+	r.Get("/contacts/count", func(w http.ResponseWriter, r *http.Request) {
+		count := contact.Count()
+		w.Write([]byte(fmt.Sprintf("(%d total Contacts)", count)))
 	})
 
 	err := http.ListenAndServe(":3000", r)

@@ -33,8 +33,8 @@
         {{if .HasNext }}
         <tr>
             <td colspan="5" style="text-align: center">
-                <button hx-target="closest tr" hx-swap="outerHTML" hx-select="tbody > tr"
-                    hx-get="/contacts?page={{sum .Page 1}}">Load More</button>
+                <span hx-target="closest tr" hx-trigger="revealed" hx-swap="outerHTML" hx-select="tbody > tr"
+                    hx-get="/contacts?page={{sum .Page 1}}">Loading</span>
             </td>
         </tr>
         {{end}}

@@ -74,6 +74,7 @@ func main() {
 			"Messages": messages,
 			"Page":     page,
 			"HasNext":  hasNext,
+			"Query":    r.URL.Query().Get("q"),
 		})
 	})
 	r.Get("/contacts/new", func(w http.ResponseWriter, r *http.Request) {

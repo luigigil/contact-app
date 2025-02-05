@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/luigigil/contact-app/domain/contact"
@@ -38,9 +39,8 @@ func main() {
 	templates := template.Must(
 		template.New("").Funcs(funcMap).ParseFS(
 			views.TmplFS,
-			"0-layout.html",
-			"index.html",
-			"new.html",
+			"layout/*.html",
+			"*.html",
 		))
 
 	fileServer := http.FileServer(http.Dir("static"))
@@ -50,6 +50,7 @@ func main() {
 		http.Redirect(w, r, "/contacts", http.StatusSeeOther)
 	})
 	r.Get("/contacts", func(w http.ResponseWriter, r *http.Request) {
+		time.Sleep(2 * time.Second)
 		page := 1
 		if r.URL.Query().Has("page") {
 			p, err := strconv.Atoi(r.URL.Query().Get("page"))
@@ -63,6 +64,12 @@ func main() {
 		hasNext := false
 		if r.URL.Query().Has("q") {
 			contacts = contact.Search(r.URL.Query().Get("q"))
+			if r.Header.Get("HX-Trigger") == "search" {
+				Render(w, templates, "rows.html", map[string]interface{}{
+					"Contacts": contacts,
+				})
+				return
+			}
 		} else {
 			contacts, hasNext = contact.All(page)
 		}

@@ -1,0 +1,39 @@
+
+<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <style>
+        .spinner {
+            transform-origin: center;
+            animation: rotate 2s linear infinite;
+        }
+        .circle {
+            fill: none;
+            stroke: #333;
+            stroke-width: 2;
+            stroke-dasharray: 1, 50;
+            stroke-linecap: round;
+            animation: dash 1.5s ease-in-out infinite;
+        }
+        @keyframes rotate {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        @keyframes dash {
+            0% {
+                stroke-dasharray: 1, 50;
+                stroke-dashoffset: 0;
+            }
+            50% {
+                stroke-dasharray: 40, 50;
+                stroke-dashoffset: -15;
+            }
+            100% {
+                stroke-dasharray: 1, 50;
+                stroke-dashoffset: -50;
+            }
+        }
+    </style>
+    <g class="spinner">
+        <circle class="circle" cx="12" cy="12" r="10"/>
+    </g>
+</svg>

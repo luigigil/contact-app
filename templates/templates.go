@@ -4,5 +4,5 @@ import (
 	"embed"
 )
 
-//go:embed *.html
+//go:embed layout/*.html *.html
 var TmplFS embed.FS

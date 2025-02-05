@@ -26,8 +26,17 @@ func Render(w http.ResponseWriter, templates *template.Template, name string, da
 func main() {
 	r := chi.NewRouter()
 
+	funcMap := template.FuncMap{
+		"sum": func(i, j int) int {
+			return i + j
+		},
+		"subtract": func(i, j int) int {
+			return i - j
+		},
+	}
+
 	templates := template.Must(
-		template.New("").ParseFS(
+		template.New("").Funcs(funcMap).ParseFS(
 			views.TmplFS,
 			"0-layout.html",
 			"index.html",
@@ -41,11 +50,21 @@ func main() {
 		http.Redirect(w, r, "/contacts", http.StatusSeeOther)
 	})
 	r.Get("/contacts", func(w http.ResponseWriter, r *http.Request) {
+		page := 1
+		if r.URL.Query().Has("page") {
+			p, err := strconv.Atoi(r.URL.Query().Get("page"))
+			if err != nil {
+				p = 1
+			}
+			page = p
+		}
+
 		var contacts []contact.Contact
+		hasNext := false
 		if r.URL.Query().Has("q") {
 			contacts = contact.Search(r.URL.Query().Get("q"))
 		} else {
-			contacts = contact.All()
+			contacts, hasNext = contact.All(page)
 		}
 
 		messages, _ := flash.GetFlash(w, r)
@@ -53,6 +72,8 @@ func main() {
 		Render(w, templates, "index.html", map[string]interface{}{
 			"Contacts": contacts,
 			"Messages": messages,
+			"Page":     page,
+			"HasNext":  hasNext,
 		})
 	})
 	r.Get("/contacts/new", func(w http.ResponseWriter, r *http.Request) {

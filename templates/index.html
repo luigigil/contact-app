@@ -33,6 +33,17 @@
     </tbody>
 </table>
 
+<div>
+    <span style="float: right">
+        {{ if gt .Page 1 }}
+        <a href="/contacts?page={{ subtract .Page 1 }}">Previous</a>
+        {{end}}
+        {{ if .HasNext}}
+        <a href="/contacts?page={{ sum .Page 1 }}">Next</a>
+        {{end}}
+    </span>
+</div>
+
 <p>
     <a href="/contacts/new">Add Contact</a>
 </p>

@@ -18,6 +18,8 @@ type Contact struct {
 	Errors map[string]string
 }
 
+const PAGE_SIZE = 5
+
 var contacts []Contact
 
 func init() {
@@ -36,8 +38,17 @@ func Load() {
 	}
 }
 
-func All() []Contact {
-	return contacts
+func All(page int) ([]Contact, bool) {
+	index := (page - 1) * PAGE_SIZE
+	hasNext := false
+
+	if index >= len(contacts) {
+		return []Contact{}, hasNext
+	}
+
+	hasNext = index+PAGE_SIZE < len(contacts)
+
+	return contacts[index : index+PAGE_SIZE], hasNext
 }
 
 func Search(query string) []Contact {

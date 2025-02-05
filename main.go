@@ -181,6 +181,31 @@ func main() {
 		flash.SetFlash(w, r, []byte("Deleted Contact!"))
 		http.Redirect(w, r, "/contacts", http.StatusSeeOther)
 	})
+	r.Get("/contacts/{contactID}/email", func(w http.ResponseWriter, r *http.Request) {
+		contactID := chi.URLParam(r, "contactID")
+		if contactID == "" {
+			http.NotFound(w, r)
+			return
+		}
+
+		id, err := strconv.Atoi(contactID)
+		if err != nil {
+			http.Error(w, "invalid id", http.StatusInternalServerError)
+			return
+		}
+		c, err := contact.Find(id)
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+
+		c.Email = r.FormValue("email")
+		fmt.Println(c.Email)
+		contact.Validate(c)
+
+		fmt.Println(c.Errors["email"])
+		w.Write([]byte(c.Errors["email"]))
+	})
 
 	err := http.ListenAndServe(":3000", r)
 	if err != nil {

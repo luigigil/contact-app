@@ -60,17 +60,7 @@ func Save(contact Contact) bool {
 	}
 
 	// Basic validation
-	if strings.TrimSpace(contact.First) == "" {
-		contact.Errors["first"] = "First name is required"
-	}
-	if strings.TrimSpace(contact.Email) == "" {
-		contact.Errors["email"] = "Email is required"
-	} else if !strings.Contains(contact.Email, "@") {
-		contact.Errors["email"] = "Invalid email format"
-	}
-	if strings.TrimSpace(contact.Phone) != "" && len(contact.Phone) < 10 {
-		contact.Errors["phone"] = "Phone number must be at least 10 digits"
-	}
+	contact = Validate(contact)
 
 	// If there are any errors, return false
 	if len(contact.Errors) > 0 {
@@ -107,6 +97,7 @@ func Save(contact Contact) bool {
 func Find(contactID int) (Contact, error) {
 	for _, c := range contacts {
 		if c.ID == contactID {
+			c.Errors = make(map[string]string)
 			return c, nil
 		}
 	}
@@ -121,4 +112,60 @@ func Delete(contactID int) error {
 		}
 	}
 	return fmt.Errorf("didn't find contact")
+}
+
+func Validate(contact Contact) Contact {
+	// Initialize errors map if it doesn't exist
+	if contact.Errors == nil {
+		contact.Errors = make(map[string]string)
+	}
+
+	// First name validation
+	if strings.TrimSpace(contact.First) == "" {
+		contact.Errors["first"] = "First name is required"
+	} else if len(contact.First) < 2 {
+		contact.Errors["first"] = "First name must be at least 2 characters"
+	}
+
+	// Last name validation
+	if strings.TrimSpace(contact.Last) == "" {
+		contact.Errors["last"] = "Last name is required"
+	} else if len(contact.Last) < 2 {
+		contact.Errors["last"] = "Last name must be at least 2 characters"
+	}
+
+	// Email validation
+	if strings.TrimSpace(contact.Email) == "" {
+		contact.Errors["email"] = "Email is required"
+	} else if !strings.Contains(contact.Email, "@") || !strings.Contains(contact.Email, ".") {
+		contact.Errors["email"] = "Invalid email format"
+	}
+	emailExists := false
+	for _, c := range contacts {
+		if c.Email == contact.Email {
+			emailExists = true
+		}
+	}
+	if emailExists {
+		contact.Errors["email"] = "Email already exists"
+	}
+
+	// Phone validation (optional field)
+	if phone := strings.TrimSpace(contact.Phone); phone != "" {
+		// Remove any non-digit characters for validation
+		digits := strings.Map(func(r rune) rune {
+			if r >= '0' && r <= '9' {
+				return r
+			}
+			return -1
+		}, phone)
+
+		if len(digits) < 10 {
+			contact.Errors["phone"] = "Phone number must have at least 10 digits"
+		} else if len(digits) > 15 {
+			contact.Errors["phone"] = "Phone number cannot exceed 15 digits"
+		}
+	}
+
+	return contact
 }

@@ -205,8 +205,13 @@ func main() {
 			return
 		}
 
-		flash.SetFlash(w, r, []byte("Deleted Contact!"))
-		http.Redirect(w, r, "/contacts", http.StatusSeeOther)
+		if r.Header.Get("HX-Trigger") == "delete-btn" {
+			flash.SetFlash(w, r, []byte("Deleted Contact!"))
+			http.Redirect(w, r, "/contacts", http.StatusSeeOther)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
 	})
 	r.Get("/contacts/{contactID}/email", func(w http.ResponseWriter, r *http.Request) {
 		contactID := chi.URLParam(r, "contactID")
@@ -236,6 +241,42 @@ func main() {
 	r.Get("/contacts/count", func(w http.ResponseWriter, r *http.Request) {
 		count := contact.Count()
 		w.Write([]byte(fmt.Sprintf("(%d total Contacts)", count)))
+	})
+	r.Post("/contacts/bulk-delete", func(w http.ResponseWriter, r *http.Request) {
+		r.ParseForm()
+		contactIDs := r.Form["selected_contact_ids"]
+
+		for _, contactID := range contactIDs {
+			id, err := strconv.Atoi(contactID)
+			if err != nil {
+				http.Error(w, fmt.Sprintf("invalid id: %d", id), http.StatusInternalServerError)
+				return
+			}
+
+			err = contact.Delete(id)
+			if err != nil {
+				http.Error(w,
+					fmt.Sprintf("couldn't delete contact with id %d: %s", id, err.Error()),
+					http.StatusInternalServerError,
+				)
+				return
+			}
+
+		}
+
+		messages, _ := flash.GetFlash(w, r)
+		messages = append(messages, "Deleted Contacts!")
+
+		page := 1
+		contacts, hasNext := contact.All(page)
+
+		Render(w, templates, "index.html", map[string]interface{}{
+			"Contacts": contacts,
+			"Messages": messages,
+			"Page":     page,
+			"HasNext":  hasNext,
+			"Query":    "",
+		})
 	})
 
 	err := http.ListenAndServe(":3000", r)

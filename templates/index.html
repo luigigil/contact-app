@@ -9,21 +9,29 @@
     <img id="spinner" class="htmx-indicator" src="/static/img/spinner-circles.svg" alt="Request In Flight..." />
 </form>
 
-<table>
-    <thead>
-        <tr>
-            <th>First
-            <th>Last
-            <th>Phone
-            <th>Email </th>
-        </tr>
-    </thead>
-    <tbody>
-        {{ template "rows.html" . }}
-    </tbody>
-</table>
+<form>
 
-<div>
+    <table>
+        <thead>
+            <tr>
+                <th>
+                <th>First
+                <th>Last
+                <th>Phone
+                <th>Email </th>
+            </tr>
+        </thead>
+        <tbody>
+            {{ template "rows.html" . }}
+        </tbody>
+    </table>
+    <button hx-post="/contacts/bulk-delete" hx-confirm="Are you sure you want to delete these contacts?"
+        hx-target="body" style="float: left; margin-top: 1rem;">
+        Delete Selected Contacts
+    </button>
+</form>
+
+<div style="padding-top: 1rem;">
     <span style="float: right">
         {{ if gt .Page 1 }}
         <a href="/contacts?page={{ subtract .Page 1 }}">Previous</a>
@@ -34,7 +42,7 @@
     </span>
 </div>
 
-<p>
+<p style="padding-top: 1rem;">
     <a href="/contacts/new">Add Contact</a>
     <span hx-get="/contacts/count" hx-trigger="revealed">
         <img id="spinner" class="htmx-indicator" src="/static/img/spinner-circles.svg" alt="Request in flight...">
